@@ -321,9 +321,13 @@ def generate_radas_sign(top_level: str, sign_result_file: str) -> Tuple[List[str
             if not file_path or not signature:
                 logger.error("Invalid JSON entry")
                 return
-            # remove the root path maven-repository
-            filename = file_path.split("/", 1)[1]
 
+            parts = file_path.split("/", 1)
+            if len(parts) < 2:
+                logger.warning("Invalid entry: %s, skip signature file generation.", file_path)
+                return
+            # remove the root path maven-repository, valid file_path: maven-repository/...
+            filename = parts[1]
             artifact_path = os.path.join(top_level, filename)
             asc_filename = f"{filename}.asc"
             signature_path = os.path.join(top_level, asc_filename)
